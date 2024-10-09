@@ -1,8 +1,6 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class BaseWeapon : MonoBehaviour
+public abstract class BaseWeapon : MonoBehaviour, IToolitemable
 {
     [SerializeField] private protected float _spread;
     [SerializeField] private protected int _damage;
@@ -10,18 +8,34 @@ public abstract class BaseWeapon : MonoBehaviour
     [SerializeField] private protected float _timeRecharge;
 
     [SerializeField] private protected Transform _firePoint;
-    [SerializeField] private protected ParticleSystem _fireEffect;
-    [SerializeField] private protected RechargeView _rechargeView;
-
+    [SerializeField] private ParticleSystem _fireEffect;
+    
+    private RechargeView _rechargeView;
     private HitEffectsData _hitEffects;
 
     private protected int _currentAmmo;
 
-    private void Start()
+    public void Initialize(PlayerHUD playerHUD)
     {
+        _rechargeView = playerHUD.RechargeView;
+
         _currentAmmo = _maxAmmo;
-        _hitEffects = Resources.Load<HitEffectsData>("HitEffectsData");
         _rechargeView.DisplayCountAmmo(_currentAmmo);
+
+        _hitEffects = Resources.Load<HitEffectsData>("HitEffectsData");
+    }
+
+    private void Update()
+    {
+        TimerUpdate();
+    }
+
+    public void Recharge()
+    {
+        if (_currentAmmo >= _maxAmmo)
+            return;
+        _rechargeView.DispaySetActiveSlider(true, _timeRecharge);
+        TimerStart(_timeRecharge);
     }
 
     private protected void SpawnBullet(Vector3 direction)
@@ -38,8 +52,8 @@ public abstract class BaseWeapon : MonoBehaviour
     {
         var hitEffect = _hitEffects.Effects[1];
 
-        if (hitInfo.transform.TryGetComponent<Healths>(out var healths))
-            healths.TakeDamage(_damage);
+        if (hitInfo.transform.TryGetComponent<IDamageable>(out var damageable))
+            damageable.TakeDamage(_damage);
 
         switch (hitInfo.transform.tag)
         {
@@ -75,34 +89,14 @@ public abstract class BaseWeapon : MonoBehaviour
         return true;
     }
 
-    private protected void Recharge()
-    {
-        if (_currentAmmo >= _maxAmmo)
-            return;
-        _rechargeView.DispaySetActiveSlider(true, _timeRecharge);
-        TimerStart(_timeRecharge);
-    }
+    public virtual void Shoot() { }
+    public virtual void Shooting() { }
+    public virtual void Zoom() { }
 
-    //Временно!!!!!!
-    private void Update()
+    public void Destroy()
     {
-        if (Input.GetMouseButtonDown(0))
-        {
-            Press();
-        }
-        if (Input.GetMouseButton(0))
-        {
-            PressDown();
-        }
-        if (Input.GetKey(KeyCode.R))
-        {
-            Recharge();
-        }
-        TimerUpdate();
+        Destroy(gameObject);
     }
-
-    public abstract void Press();
-    public abstract void PressDown();
 
     #region Timer
 

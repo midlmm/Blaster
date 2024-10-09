@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class CameraRotate
@@ -23,7 +21,7 @@ public class CameraRotate
         Subscribes();
     }
 
-    public void Destroy()
+    public void OnDestroy()
     {
         Unsubscribes();
     }

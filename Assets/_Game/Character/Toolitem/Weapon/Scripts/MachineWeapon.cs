@@ -1,6 +1,5 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using Zenject;
 
 public class MachineWeapon : BaseWeapon
 {
@@ -9,17 +8,12 @@ public class MachineWeapon : BaseWeapon
 
     private float _currentDelay;
 
-    public override void PressDown()
-    {
-        Shooting();   
-    }
-
-    private void Shooting()
+    public override void Shooting()
     {
         float a = Random.Range(-_spread, _spread);
         float b = Random.Range(-_spread, _spread);
 
-        if(_currentDelay <= 0)
+        if (_currentDelay <= 0)
         {
             if (!ProcessingShoot()) return;
 
@@ -30,10 +24,5 @@ public class MachineWeapon : BaseWeapon
         {
             _currentDelay -= Time.deltaTime;
         }
-    }
-
-    public override void Press()
-    {
-
     }
 }
