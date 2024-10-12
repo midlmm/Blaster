@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class PlayerToolitemInput : IToolitemInput
 {
-    public event Action OnShootInput;
-    public event Action<bool> OnChangeShootingInput;
-    public event Action<bool> OnChangeZoomInput;
+    public event Action OnUseInput;
+    public event Action<bool> OnChangeUseInput;
+    public event Action<bool> OnChangeAlternativeUseInput;
     public event Action OnRechargeInput;
     public event Action<int> OnChangeToolitemInput;
 
@@ -23,17 +23,19 @@ public class PlayerToolitemInput : IToolitemInput
 
     private void ShootInput()
     {
-        if (Input.GetMouseButtonDown(0)) OnShootInput?.Invoke();
+        if (Input.GetMouseButtonDown(0))
+            OnUseInput?.Invoke();
     }
 
     public void ShootingInput()
     {
         var isShootingInput = false;
 
-        if (Input.GetMouseButton(0)) isShootingInput = true;
+        if (Input.GetMouseButton(0))
+            isShootingInput = true;
 
         if (_currentShootingInput != isShootingInput)
-            OnChangeShootingInput?.Invoke(isShootingInput);
+            OnChangeUseInput?.Invoke(isShootingInput);
 
         _currentShootingInput = isShootingInput;
     }
@@ -42,23 +44,28 @@ public class PlayerToolitemInput : IToolitemInput
     {
         var isZoomInput = false;
 
-        if (Input.GetMouseButtonDown(1)) isZoomInput = true;
+        if (Input.GetMouseButtonDown(1))
+            isZoomInput = true;
 
         if (_currentZoomInput != isZoomInput)
-            OnChangeZoomInput?.Invoke(isZoomInput);
+            OnChangeAlternativeUseInput?.Invoke(isZoomInput);
 
         _currentZoomInput = isZoomInput;
     }
 
     private void RechargeInput()
     {
-        if (Input.GetKeyDown(KeyCode.R)) OnRechargeInput?.Invoke();
+        if (Input.GetKeyDown(KeyCode.R))
+            OnRechargeInput?.Invoke();
     }
 
     public void ChangeToolitemInput()
     {
-        if (Input.GetKeyDown(KeyCode.Alpha1)) OnChangeToolitemInput?.Invoke(0);
-        else  if (Input.GetKeyDown(KeyCode.Alpha2)) OnChangeToolitemInput?.Invoke(1);
-        else  if (Input.GetKeyDown(KeyCode.Alpha3)) OnChangeToolitemInput?.Invoke(2);
+        if (Input.GetKeyDown(KeyCode.Alpha1))
+            OnChangeToolitemInput?.Invoke(0);
+        else  if (Input.GetKeyDown(KeyCode.Alpha2))
+            OnChangeToolitemInput?.Invoke(1);
+        else  if (Input.GetKeyDown(KeyCode.Alpha3))
+            OnChangeToolitemInput?.Invoke(2);
     }
 }

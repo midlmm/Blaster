@@ -3,21 +3,23 @@ using Zenject;
 
 public class PlayerInstaller : MonoInstaller
 {
-    //[SerializeField] private Transform _spawnPoint;
-    //[SerializeField] private Player _playerPrefab;
-
-    [SerializeField] private PlayerHUD _playerHUD;
+    [SerializeField] private Transform _spawnPoint;
+    [SerializeField] private Player _prefabPlayer;
 
     public override void InstallBindings()
     {
-        BindPlayerHUD();
+        BindPlayer();
     }
 
-    private void BindPlayerHUD()
+    private void BindPlayer()
     {
+        var player = Instantiate(_prefabPlayer, _spawnPoint.position, _spawnPoint.rotation, null);
+
+        player.Initialize();
+
         Container
-            .Bind<PlayerHUD>()
-            .FromInstance(_playerHUD)
+            .Bind<Player>()
+            .FromInstance(player)
             .AsSingle();
     }
 }

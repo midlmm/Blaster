@@ -1,12 +1,10 @@
 using UnityEngine;
-using Zenject;
 
 public class Player : MonoBehaviour, IDamageable 
 {
     public CharacterMovements Movements { get; private set; }
     public CameraRotate CameraRotate { get; private set; }
     public Healths Healths { get; private set; }
-    public PlayerHUD PlayerHUD { get; private set; }
     public Toolitem Toolitem => _toolitem;
 
     [SerializeField] private Transform _characterTransform;
@@ -18,11 +16,8 @@ public class Player : MonoBehaviour, IDamageable
     private ICameraRotateInput _cameraRotateInput;
     private IToolitemInput _toolitemInput;
 
-    [Inject]
-    public void Initialize(PlayerHUD playerHUD)
+    public void Initialize()
     {
-        PlayerHUD = playerHUD;
-
         _movementsInput = new PlayerMovementsInput();
         Movements = new CharacterMovements(_movementsInput, _characterTransform);
 
@@ -30,7 +25,7 @@ public class Player : MonoBehaviour, IDamageable
         CameraRotate = new CameraRotate(_cameraRotateInput, _characterTransform, _cameraTransform);
 
         _toolitemInput = new PlayerToolitemInput();
-        Toolitem.Initialize(_toolitemInput, PlayerHUD);
+        _toolitem.Initialize(_toolitemInput);
 
         Healths = new Healths();
 
@@ -46,9 +41,9 @@ public class Player : MonoBehaviour, IDamageable
         CameraRotate.Tick();
     }
 
-    public void TakeDamage(int damage)
+    public void TakeDamage(DamageInfo damageInfo)
     {
-        Healths.TakeDamage(damage);
+        Healths.TakeDamage(damageInfo.Damage);
     }
 
     private void Dead()

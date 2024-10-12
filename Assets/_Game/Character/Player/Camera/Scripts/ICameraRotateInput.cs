@@ -1,9 +1,7 @@
 using System;
 using UnityEngine;
 
-public interface ICameraRotateInput
+public interface ICameraRotateInput : ITickable
 {
     public event Action<Vector2> OnChangeMouseInput;
-
-    public virtual void Tick() { }
 }

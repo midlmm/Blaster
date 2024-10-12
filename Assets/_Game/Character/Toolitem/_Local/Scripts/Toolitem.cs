@@ -1,13 +1,18 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
+using static UnityEditor.Progress;
 
 public class Toolitem : MonoBehaviour
 {
+    public Action<IToolitemable> OnChangeToolitem;
+
     [SerializeField] private Transform _armPoint;
     [SerializeField] private ToolitemConfigData[] _toolitemConfigDatas;
 
-    private PlayerHUD _playerHUD;
+    private List<GameObject> _toolitems;
+
     private IToolitemInput _toolitemInput;
 
     private IToolitemable _currentToolitem;
@@ -15,14 +20,18 @@ public class Toolitem : MonoBehaviour
     private bool _isShooting;
     private bool _isZoom;
 
-    public void Initialize(IToolitemInput toolitemInput, PlayerHUD playerHUD)
+    public void Initialize(IToolitemInput toolitemInput)
     {
         _toolitemInput = toolitemInput;
-        _playerHUD = playerHUD;
 
-        ChangeToolitem(0);
+        _toolitems = new List<GameObject>();
 
         Subscribe();
+    }
+
+    private void Start()
+    {
+        ChangeToolitem(0);
     }
 
     private void Update()
@@ -30,10 +39,10 @@ public class Toolitem : MonoBehaviour
         _toolitemInput.Tick();
 
         if (_isShooting)
-            _currentToolitem.Shooting();
+            _currentToolitem.Using();
 
         if(_isZoom)
-            _currentToolitem.Zoom();
+            _currentToolitem.AlternativeUsing();
     }
 
     private void ChangeToolitem(int key)
@@ -41,32 +50,46 @@ public class Toolitem : MonoBehaviour
         if (_toolitemConfigDatas.Length < key)
             return;
 
-        if(_currentToolitem != null)
-            _currentToolitem.Destroy();
-
         var toolitemConfig = _toolitemConfigDatas[key];
+        GameObject toolitem = null;
 
-        var toolitem = Instantiate(toolitemConfig.Prefab, _armPoint).transform;
+        foreach (var item in _toolitems)
+        {
+            item.SetActive(false);
+            if (item.name == toolitemConfig.Prefab.name + "(Clone)")
+                toolitem = item;
+        }
+            
+        if (toolitem != null)
+        {
+            toolitem.SetActive(true);
+        }
+        else
+        {
+            toolitem = Instantiate(toolitemConfig.Prefab, _armPoint);
 
-        toolitem.localPosition = toolitemConfig.OffsetPosition;
-        toolitem.localRotation = Quaternion.Euler(toolitemConfig.OffsetRotation);
+            toolitem.transform.localPosition = toolitemConfig.OffsetPosition;
+            toolitem.transform.localRotation = Quaternion.Euler(toolitemConfig.OffsetRotation);
+
+            _toolitems.Add(toolitem);
+        }
 
         _currentToolitem = toolitem.GetComponent<IToolitemable>();
 
-        _currentToolitem.Initialize(_playerHUD);
+        OnChangeToolitem?.Invoke(_currentToolitem);
     }
 
-    private void Shoot()
+    private void Use()
     {
-        _currentToolitem.Shoot();
+        _currentToolitem.Use();
     }
 
-    private void Shooting(bool isActive)
+    private void Using(bool isActive)
     {
         _isShooting = isActive;
     }
 
-    private void Zoom(bool isActive)
+    private void AlternativeUsing(bool isActive)
     {
         _isZoom = isActive;
     }
@@ -83,18 +106,18 @@ public class Toolitem : MonoBehaviour
 
     private void Subscribe()
     {
-        _toolitemInput.OnShootInput += Shoot;
-        _toolitemInput.OnChangeShootingInput += Shooting;
-        _toolitemInput.OnChangeZoomInput += Zoom;
+        _toolitemInput.OnUseInput += Use;
+        _toolitemInput.OnChangeUseInput += Using;
+        _toolitemInput.OnChangeAlternativeUseInput += AlternativeUsing;
         _toolitemInput.OnRechargeInput += Recharge;
         _toolitemInput.OnChangeToolitemInput += ChangeToolitem;
     }
 
     private void Unsubscribe()
     {
-        _toolitemInput.OnShootInput -= Shoot;
-        _toolitemInput.OnChangeShootingInput -= Shooting;
-        _toolitemInput.OnChangeZoomInput -= Zoom;
+        _toolitemInput.OnUseInput -= Use;
+        _toolitemInput.OnChangeUseInput -= Using;
+        _toolitemInput.OnChangeAlternativeUseInput -= AlternativeUsing;
         _toolitemInput.OnRechargeInput -= Recharge;
         _toolitemInput.OnChangeToolitemInput -= ChangeToolitem;
     }
