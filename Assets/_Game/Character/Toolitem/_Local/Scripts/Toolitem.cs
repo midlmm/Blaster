@@ -1,8 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
-using static UnityEditor.Progress;
 
 public class Toolitem : MonoBehaviour
 {
@@ -11,7 +10,7 @@ public class Toolitem : MonoBehaviour
     [SerializeField] private Transform _armPoint;
     [SerializeField] private ToolitemConfigData[] _toolitemConfigDatas;
 
-    private List<GameObject> _toolitems;
+    private Dictionary<string, IToolitemable> _toolitems;
 
     private IToolitemInput _toolitemInput;
 
@@ -24,7 +23,7 @@ public class Toolitem : MonoBehaviour
     {
         _toolitemInput = toolitemInput;
 
-        _toolitems = new List<GameObject>();
+        _toolitems = new Dictionary<string, IToolitemable>();
 
         Subscribe();
     }
@@ -45,38 +44,30 @@ public class Toolitem : MonoBehaviour
             _currentToolitem.AlternativeUsing();
     }
 
+    private void OnDestroy()
+    {
+        Unsubscribe();
+    }
+
     private void ChangeToolitem(int key)
     {
         if (_toolitemConfigDatas.Length < key)
             return;
 
         var toolitemConfig = _toolitemConfigDatas[key];
-        GameObject toolitem = null;
 
-        foreach (var item in _toolitems)
-        {
-            item.SetActive(false);
-            if (item.name == toolitemConfig.Prefab.name + "(Clone)")
-                toolitem = item;
-        }
-            
-        if (toolitem != null)
-        {
-            toolitem.SetActive(true);
-        }
-        else
-        {
-            toolitem = Instantiate(toolitemConfig.Prefab, _armPoint);
+        _currentToolitem?.Put();
 
-            toolitem.transform.localPosition = toolitemConfig.OffsetPosition;
-            toolitem.transform.localRotation = Quaternion.Euler(toolitemConfig.OffsetRotation);
-
-            _toolitems.Add(toolitem);
+        if (!_toolitems.ContainsKey(toolitemConfig.Prefab.name))
+        {
+            _toolitems.Add(toolitemConfig.Prefab.name, Instantiate(toolitemConfig.Prefab, _armPoint).GetComponent<IToolitemable>());
         }
 
-        _currentToolitem = toolitem.GetComponent<IToolitemable>();
+        _currentToolitem = _toolitems[toolitemConfig.Prefab.name];
 
         OnChangeToolitem?.Invoke(_currentToolitem);
+
+        _currentToolitem.Took();
     }
 
     private void Use()
@@ -97,11 +88,6 @@ public class Toolitem : MonoBehaviour
     private void Recharge()
     {
         _currentToolitem.Recharge();
-    }
-
-    private void OnDestroy()
-    {
-        Unsubscribe();
     }
 
     private void Subscribe()

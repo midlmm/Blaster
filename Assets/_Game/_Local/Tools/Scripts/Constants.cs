@@ -5,9 +5,9 @@ public static class Constants
         public const string PLAYER = "Player";
         public const string ITEM = "Item";
         public const string CHARACTER = "Character";
-        public const string STONE = "Stone";
-        public const string WOOD = "Wood";
-        public const string METAL = "Metal";
-        public const string SAND = "Sand";
+    }
+    public static class Suffix
+    {
+        public const string CLONE = "(Clone)";
     }
 }

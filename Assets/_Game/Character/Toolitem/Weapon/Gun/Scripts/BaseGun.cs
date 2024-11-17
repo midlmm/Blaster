@@ -67,9 +67,15 @@ public abstract class BaseGun : MonoBehaviour, IWeaponable
     public virtual void Using() { }
     public virtual void AlternativeUsing() { }
 
-    public void Destroy()
+    public void Took()
     {
-        Destroy(gameObject);
+        gameObject.SetActive(true);
+        OnChangeAmmo?.Invoke(_currentAmmo);
+    }
+
+    public void Put()
+    {
+        gameObject.SetActive(false);
     }
 
     #region Timer
