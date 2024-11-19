@@ -6,8 +6,4 @@ public static class Constants
         public const string ITEM = "Item";
         public const string CHARACTER = "Character";
     }
-    public static class Suffix
-    {
-        public const string CLONE = "(Clone)";
-    }
 }

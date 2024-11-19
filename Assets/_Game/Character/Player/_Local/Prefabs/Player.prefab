@@ -2167,3 +2167,4 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d5c7a00512d41cd4f9845166b3231a63, type: 2}
   - {fileID: 11400000, guid: 237333b3623ce93418a2f7c61b422245, type: 2}
   - {fileID: 11400000, guid: c45ec127f6b1d3146977be4d39a9ffd6, type: 2}
+  _camera: {fileID: 2529777319100059044}

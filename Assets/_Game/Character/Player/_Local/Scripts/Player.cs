@@ -1,9 +1,9 @@
 using UnityEngine;
+using Zenject;
 
 public class Player : MonoBehaviour, IDamageable 
 {
-    public CharacterMovements Movements { get; private set; }
-    public CameraRotate CameraRotate { get; private set; }
+    public PlayerMovements Movements { get; private set; }
     public Healths Healths { get; private set; }
     public Toolitem Toolitem => _toolitem;
 
@@ -12,19 +12,14 @@ public class Player : MonoBehaviour, IDamageable
 
     [SerializeField] private Toolitem _toolitem;
 
-    private ICharacterMovementsInput _movementsInput;
-    private ICameraRotateInput _cameraRotateInput;
     private IToolitemInput _toolitemInput;
 
-    public void Initialize()
+    [Inject]
+    private void Initialize(ICharacterMovementsInput characterMovementsInput, ICameraRotateInput cameraRotateInput, IToolitemInput toolitemInput)
     {
-        _movementsInput = new PlayerMovementsInput();
-        Movements = new CharacterMovements(_movementsInput, _characterTransform);
+        Movements = new PlayerMovements(characterMovementsInput, cameraRotateInput, _characterTransform, _cameraTransform);
 
-        _cameraRotateInput = new CameraRotateInput();
-        CameraRotate = new CameraRotate(_cameraRotateInput, _characterTransform, _cameraTransform);
-
-        _toolitemInput = new PlayerToolitemInput();
+        _toolitemInput = toolitemInput;
         _toolitem.Initialize(_toolitemInput);
 
         Healths = new Healths();
@@ -37,8 +32,7 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Update()
     {
-        Movements.Tick(Time.deltaTime);
-        CameraRotate.Tick();
+        Movements.Tick();
     }
 
     public void TakeDamage(DamageInfo damageInfo)
@@ -48,8 +42,7 @@ public class Player : MonoBehaviour, IDamageable
 
     private void Dead()
     {
-        Movements.OnDestroy();
-        CameraRotate.OnDestroy();
+        Movements.OnDestoy();
         Destroy(gameObject);
     }
 

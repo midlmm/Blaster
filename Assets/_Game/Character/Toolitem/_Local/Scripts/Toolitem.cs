@@ -42,6 +42,7 @@ public class Toolitem : MonoBehaviour
 
         if(_isZoom)
             _currentToolitem.AlternativeUsing();
+
     }
 
     private void OnDestroy()

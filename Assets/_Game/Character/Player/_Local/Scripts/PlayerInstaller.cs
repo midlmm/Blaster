@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using Zenject;
 
@@ -13,9 +14,23 @@ public class PlayerInstaller : MonoInstaller
 
     private void BindPlayer()
     {
-        var player = Instantiate(_prefabPlayer, _spawnPoint.position, _spawnPoint.rotation, null);
+        Container
+            .Bind<ICharacterMovementsInput>()
+            .To<PlayerMovementsInput>()
+            .AsSingle();
 
-        player.Initialize();
+        Container
+            .Bind<ICameraRotateInput>()
+            .To<CameraRotateInput>()
+            .AsSingle();
+
+        Container
+            .Bind<IToolitemInput>()
+            .To<PlayerToolitemInput>()
+            .AsSingle();
+
+        var player = Container
+            .InstantiatePrefabForComponent<Player>(_prefabPlayer, _spawnPoint.position, _spawnPoint.rotation, null);
 
         Container
             .Bind<Player>()
