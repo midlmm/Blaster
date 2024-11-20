@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class CharacterMovements
 {
-    public Action<bool, float> OnSwitchWalking;
-    public Action OnJumping;
-    public Action<float> OnLanding;
+    public event Action<bool, float> OnSwitchWalking;
+    public event Action OnJumping;
+    public event Action<float> OnLanding;
     
     private readonly CharacterConfigData _defaultCharacterConfig = Resources.Load<CharacterConfigData>("DefaultCharacterConfig");
     private readonly ICharacterMovementsInput _characterMovementsInput;

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class Healths
 {
-    public Action OnDead;
+    public event Action OnDead;
 
-    public int Health { get; private set; }
+    public uint Health { get; private set; }
 
     [SerializeField] private int _maxHealth;
 
@@ -16,6 +16,9 @@ public class Healths
 
     public void TakeDamage(int damage)
     {
+        if (damage < 0)
+            return;
+
         Health -= damage;
 
         if(Health < 0)
