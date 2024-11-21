@@ -14,20 +14,20 @@ public class PlayerToolitemInput : IToolitemInput
 
     public void Tick()
     {
-        ShootInput();
-        ShootingInput();
-        ZoomInput();
+        UseInput();
+        UsingInput();
+        AlternativeUsingInput();
         RechargeInput();
         ChangeToolitemInput();
     }
 
-    private void ShootInput()
+    private void UseInput()
     {
         if (Input.GetMouseButtonDown(0))
             OnUseInput?.Invoke();
     }
 
-    public void ShootingInput()
+    public void UsingInput()
     {
         var isShootingInput = false;
 
@@ -40,11 +40,11 @@ public class PlayerToolitemInput : IToolitemInput
         _currentShootingInput = isShootingInput;
     }
 
-    public void ZoomInput()
+    public void AlternativeUsingInput()
     {
         var isZoomInput = false;
 
-        if (Input.GetMouseButtonDown(1))
+        if (Input.GetMouseButton(1))
             isZoomInput = true;
 
         if (_currentZoomInput != isZoomInput)

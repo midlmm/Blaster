@@ -4,8 +4,12 @@ using Zenject;
 public class Player : MonoBehaviour, IDamageable 
 {
     public PlayerMovements Movements { get; private set; }
+    public PlayerAnimatorController AnimatorController { get; private set; }
     public Healths Healths { get; private set; }
     public Toolitem Toolitem => _toolitem;
+
+    [SerializeField] private PlayerConfigData _config;
+    [SerializeField] private Animator _animator;
 
     [SerializeField] private Transform _characterTransform;
     [SerializeField] private Transform _cameraTransform;
@@ -17,10 +21,11 @@ public class Player : MonoBehaviour, IDamageable
     [Inject]
     private void Initialize(ICharacterMovementsInput characterMovementsInput, ICameraRotateInput cameraRotateInput, IToolitemInput toolitemInput)
     {
-        Movements = new PlayerMovements(characterMovementsInput, cameraRotateInput, _characterTransform, _cameraTransform);
+        Movements = new PlayerMovements(characterMovementsInput, cameraRotateInput, _characterTransform, _cameraTransform, _config);
+        AnimatorController = new PlayerAnimatorController(_animator);
 
         _toolitemInput = toolitemInput;
-        _toolitem.Initialize(_toolitemInput);
+        _toolitem.Initialize(_toolitemInput, AnimatorController);
 
         Healths = new Healths();
 

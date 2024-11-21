@@ -5,7 +5,7 @@ public class Healths
 {
     public event Action OnDead;
 
-    public uint Health { get; private set; }
+    public int Health { get; private set; }
 
     [SerializeField] private int _maxHealth;
 
