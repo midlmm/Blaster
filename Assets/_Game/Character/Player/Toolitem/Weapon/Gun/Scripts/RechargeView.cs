@@ -32,7 +32,7 @@ public class RechargeView : MonoBehaviour
 
     private void DispayValueSlider(float value)
     {
-        _sliderRecharge.value = value;
+        _sliderRecharge.value = _sliderRecharge.maxValue - value;
     }
 
     private void DispayActiveSlider(bool active, float maxValue)

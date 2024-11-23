@@ -7,22 +7,26 @@ public abstract class BaseGun : MonoBehaviour, IWeaponable
     public event Action<float> OnChangeTimeRecharge;
     public event Action<bool, float> OnChangeStateRecharge;
 
-    [SerializeField] private protected GunConfigData _configData;
-
-    [SerializeField] private protected Transform _firePoint;
     [SerializeField] private ParticleSystem _fireEffect;
 
+    [SerializeField] private protected GunConfigData _configData;
+
     private protected int _currentAmmo;
+    private protected Transform _transformCamera;
+
+    private Timer _timerRecharge;
 
     public void Start()
     {
         _currentAmmo = _configData.MaxAmmo;
         OnChangeAmmo?.Invoke(_currentAmmo);
+
+        _timerRecharge = new Timer(_configData.TimeRecharge, OnChangeTimeRecharge, TimerEnd);
     }
 
     private void Update()
     {
-        TimerUpdate();
+        _timerRecharge.Tick();
     }
 
     public void Recharge()
@@ -32,12 +36,12 @@ public abstract class BaseGun : MonoBehaviour, IWeaponable
 
         OnChangeStateRecharge?.Invoke(true, _configData.TimeRecharge);
 
-        TimerStart(_configData.TimeRecharge);
+        _timerRecharge.TimerStart();
     }
 
-    private protected void SpawnBullet(Vector3 direction)
+    private protected void Shoot(Vector3 direction)
     {
-        var isHit = Physics.Raycast(_firePoint.position, direction, out var hitInfo);
+        var isHit = Physics.Raycast(_transformCamera.position, direction, out var hitInfo);
 
         _fireEffect.Play();
 
@@ -65,10 +69,12 @@ public abstract class BaseGun : MonoBehaviour, IWeaponable
 
     public virtual void Use() { }
     public virtual void Using() { }
-    public virtual void AlternativeUsing() { }
+    public virtual void AlternativeUsing(bool isActive) { }
 
-    public void Took()
+    public void Took(Transform transformCamera)
     {
+        _transformCamera = transformCamera;
+
         gameObject.SetActive(true);
         OnChangeAmmo?.Invoke(_currentAmmo);
     }
@@ -78,46 +84,11 @@ public abstract class BaseGun : MonoBehaviour, IWeaponable
         gameObject.SetActive(false);
     }
 
-    #region Timer
-
-    private float _timeLeft = 0f;
-    private bool _timerOn = false;
-
-    public void TimerUpdate()
+    private void TimerEnd()
     {
-        if (_timerOn)
-        {
-            if (_timeLeft > 0)
-            {
-                _timeLeft -= Time.deltaTime;
-                UpdateTimeText();
-            }
-            else
-            {
-                _timerOn = false;
-                _currentAmmo = _configData.MaxAmmo;
+        _currentAmmo = _configData.MaxAmmo;
 
-                OnChangeStateRecharge?.Invoke(false, _configData.TimeRecharge);
-                OnChangeAmmo?.Invoke(_currentAmmo);
-            }
-        }
+        OnChangeStateRecharge?.Invoke(false, _configData.TimeRecharge);
+        OnChangeAmmo?.Invoke(_currentAmmo);
     }
-
-    public void TimerStart(float time)
-    {
-        _timeLeft = time;
-        _timerOn = true;
-    }
-
-    public void TimerStop()
-    {
-        _timerOn = false;
-    }
-
-    public void UpdateTimeText()
-    {
-        OnChangeTimeRecharge?.Invoke(_configData.TimeRecharge - _timeLeft);
-    }
-
-    #endregion
 }

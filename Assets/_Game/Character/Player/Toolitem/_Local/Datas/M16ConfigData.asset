@@ -12,6 +12,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5097996b835ed424fac34b885db16fad, type: 3}
   m_Name: M16ConfigData
   m_EditorClassIdentifier: 
-  _offsetPosition: {x: 0.1, y: 0, z: 0.8}
-  _offsetRotation: {x: 0, y: 270, z: 0}
   _prefab: {fileID: 8354316725206223689, guid: 1beeb0bc1ff5ca34f88c2a33a0420953, type: 3}
+  _delayUsing: 0.1

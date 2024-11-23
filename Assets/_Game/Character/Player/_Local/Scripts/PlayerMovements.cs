@@ -9,19 +9,20 @@ public class PlayerMovements
     private ICharacterMovementsInput _movementsInput;
     private ICameraRotateInput _cameraRotateInput;
 
+    private PlayerConfigData _playerConfig;
+
     private bool _isMoving;
     private float _speed;
 
-    private float _absorbingShaking = 20f;
-
-    public PlayerMovements(ICharacterMovementsInput movementsInput, ICameraRotateInput cameraRotateInput, Transform characterTransform, Transform cameraTransform)
+    public PlayerMovements(ICharacterMovementsInput movementsInput, ICameraRotateInput cameraRotateInput, Transform characterTransform, Transform cameraTransform, PlayerConfigData playerConfig)
     {
         _movementsInput = movementsInput;
         _cameraRotateInput = cameraRotateInput;
+        _playerConfig = playerConfig;
 
         Movements = new CharacterMovements(_movementsInput, characterTransform);
-        CameraRotate = new CameraRotate(cameraRotateInput, characterTransform, cameraTransform);
-        CameraShake = new CameraShake(cameraTransform);
+        CameraRotate = new CameraRotate(cameraRotateInput, characterTransform, cameraTransform, playerConfig);
+        CameraShake = new CameraShake(cameraTransform, playerConfig);
 
         Movements.OnSwitchWalking += SwitchWalking;
         Movements.OnLanding += Landing;
@@ -48,7 +49,7 @@ public class PlayerMovements
 
     private void Landing(float height)
     {
-        CameraShake.Shake(height / _absorbingShaking);
+        CameraShake.Shake(height / _playerConfig.DivisorShakeLanding, _playerConfig.ShakingTimeLanding);
     }
 
     private void SwitchWalking(bool isMoving, float speed)

@@ -1,27 +1,29 @@
 using System;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class Toolitem : MonoBehaviour
 {
-    public Action<IToolitemable> OnChangeToolitem;
+    public event Action<IToolitemable> OnChangeToolitem;
 
     [SerializeField] private Transform _armPoint;
     [SerializeField] private ToolitemConfigData[] _toolitemConfigDatas;
 
     private Dictionary<string, IToolitemable> _toolitems;
 
-    private IToolitemInput _toolitemInput;
-
     private IToolitemable _currentToolitem;
 
-    private bool _isShooting;
-    private bool _isZoom;
+    private bool _isUsing;
+    private float _timeLeftUsing;
+    private float _currentDelayUsing;
 
-    public void Initialize(IToolitemInput toolitemInput)
+    private IToolitemInput _toolitemInput;
+    private Transform _transformCamera;
+
+    public void Initialize(IToolitemInput toolitemInput, Transform transformCamera)
     {
         _toolitemInput = toolitemInput;
+        _transformCamera = transformCamera;
 
         _toolitems = new Dictionary<string, IToolitemable>();
 
@@ -37,12 +39,7 @@ public class Toolitem : MonoBehaviour
     {
         _toolitemInput.Tick();
 
-        if (_isShooting)
-            _currentToolitem.Using();
-
-        if(_isZoom)
-            _currentToolitem.AlternativeUsing();
-
+        ProcessingUsing();
     }
 
     private void OnDestroy()
@@ -56,6 +53,7 @@ public class Toolitem : MonoBehaviour
             return;
 
         var toolitemConfig = _toolitemConfigDatas[key];
+        _currentDelayUsing = toolitemConfig.DelayUsing;
 
         _currentToolitem?.Put();
 
@@ -68,7 +66,7 @@ public class Toolitem : MonoBehaviour
 
         OnChangeToolitem?.Invoke(_currentToolitem);
 
-        _currentToolitem.Took();
+        _currentToolitem.Took(_transformCamera);
     }
 
     private void Use()
@@ -78,17 +76,34 @@ public class Toolitem : MonoBehaviour
 
     private void Using(bool isActive)
     {
-        _isShooting = isActive;
+        _isUsing = isActive;
     }
 
     private void AlternativeUsing(bool isActive)
     {
-        _isZoom = isActive;
+        _currentToolitem.AlternativeUsing(isActive);
     }
 
     private void Recharge()
     {
         _currentToolitem.Recharge();
+    }
+
+    private void ProcessingUsing()
+    {
+        if (!_isUsing)
+            return;
+
+        if (_timeLeftUsing <= 0)
+        {
+            _currentToolitem.Using();
+
+            _timeLeftUsing = _currentDelayUsing;
+        }
+        else
+        {
+            _timeLeftUsing -= Time.deltaTime;
+        }
     }
 
     private void Subscribe()

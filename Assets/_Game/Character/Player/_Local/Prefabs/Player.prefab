@@ -785,6 +785,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f363156b592e55248bb252b08dc2ea59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _config: {fileID: 11400000, guid: 2db575dc246f5284a861a8e6718d137e, type: 2}
   _characterTransform: {fileID: 2202833836073209950}
   _cameraTransform: {fileID: 2529777319100059044}
   _toolitem: {fileID: 9184021376879719867}
@@ -2167,4 +2168,3 @@ MonoBehaviour:
   - {fileID: 11400000, guid: d5c7a00512d41cd4f9845166b3231a63, type: 2}
   - {fileID: 11400000, guid: 237333b3623ce93418a2f7c61b422245, type: 2}
   - {fileID: 11400000, guid: c45ec127f6b1d3146977be4d39a9ffd6, type: 2}
-  _camera: {fileID: 2529777319100059044}

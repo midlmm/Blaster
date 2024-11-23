@@ -3,7 +3,7 @@ using UnityEngine;
 
 public class Healths
 {
-    public Action OnDead;
+    public event Action OnDead;
 
     public int Health { get; private set; }
 
@@ -16,6 +16,9 @@ public class Healths
 
     public void TakeDamage(int damage)
     {
+        if(damage < 0)
+            Debug.LogException(new Exception("Negative damage"));
+
         Health -= damage;
 
         if(Health < 0)

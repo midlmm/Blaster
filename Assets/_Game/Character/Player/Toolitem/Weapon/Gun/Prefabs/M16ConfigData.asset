@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ff870c4ef43376f4f9798e35a6278a28, type: 3}
   m_Name: M16ConfigData
   m_EditorClassIdentifier: 
-  _spread: 0.001
+  _spread: 0.01
   _damage: 10
   _maxAmmo: 20
   _timeRecharge: 1

@@ -7,6 +7,8 @@ public class Player : MonoBehaviour, IDamageable
     public Healths Healths { get; private set; }
     public Toolitem Toolitem => _toolitem;
 
+    [SerializeField] private PlayerConfigData _config;
+
     [SerializeField] private Transform _characterTransform;
     [SerializeField] private Transform _cameraTransform;
 
@@ -17,10 +19,10 @@ public class Player : MonoBehaviour, IDamageable
     [Inject]
     private void Initialize(ICharacterMovementsInput characterMovementsInput, ICameraRotateInput cameraRotateInput, IToolitemInput toolitemInput)
     {
-        Movements = new PlayerMovements(characterMovementsInput, cameraRotateInput, _characterTransform, _cameraTransform);
+        Movements = new PlayerMovements(characterMovementsInput, cameraRotateInput, _characterTransform, _cameraTransform, _config);
 
         _toolitemInput = toolitemInput;
-        _toolitem.Initialize(_toolitemInput);
+        _toolitem.Initialize(_toolitemInput, _cameraTransform);
 
         Healths = new Healths();
 
