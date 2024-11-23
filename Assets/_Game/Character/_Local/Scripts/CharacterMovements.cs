@@ -5,7 +5,7 @@ public class CharacterMovements
 {
     public event Action<bool, float> OnSwitchWalking;
     public event Action OnJumping;
-    public event Action OnLanding;
+    public event Action<float> OnLanding;
     
     private readonly CharacterConfigData _defaultCharacterConfig = Resources.Load<CharacterConfigData>("DefaultCharacterConfig");
     private readonly ICharacterMovementsInput _characterMovementsInput;
@@ -21,7 +21,8 @@ public class CharacterMovements
     private bool _isFalling;
     private bool _isCrouching;
     private bool _isMoving;
-    private bool _isGroundPrevious;
+    private float _backHeight;
+    private float _dropHeight;
 
     public CharacterMovements(ICharacterMovementsInput characterMovementsInput, Transform characterTransform)
     {
@@ -141,10 +142,29 @@ public class CharacterMovements
 
     private void Landing()
     {
-        if(_characterController.isGrounded && !_isGroundPrevious)
-            OnLanding?.Invoke();
+        Physics.queriesHitTriggers = false;
 
-        _isGroundPrevious = _characterController.isGrounded;
+        RaycastHit hit;
+        var positionRay = _characterTransform.position;
+        var currentHeight = 0f;
+
+        positionRay.y -= _characterHeight / 2;
+
+        if (Physics.Raycast(positionRay, _characterTransform.TransformDirection(Vector3.down), out hit, Mathf.Infinity))
+        {
+            currentHeight = Mathf.Abs(hit.point.y - positionRay.y);
+
+            if (!_characterController.isGrounded && _dropHeight < currentHeight)
+                _dropHeight = currentHeight;
+
+            if (_backHeight > 0.1f && currentHeight < 0.1f)
+            {
+                OnLanding?.Invoke(_dropHeight);
+                _dropHeight = 0;
+            }
+                
+            _backHeight = currentHeight;
+        }
     }
 
     private void Subscribes()
