@@ -16,5 +16,5 @@ MonoBehaviour:
   _maxAngleY: 90
   _divisorShakeLanding: 20
   _shakingTimeLanding: 0.1
-  _swayingSpeedMultiplier: 27
-  _forceSwaying: 0.7
+  _swayingSpeedMultiplier: 100
+  _forceSwaying: 0.8

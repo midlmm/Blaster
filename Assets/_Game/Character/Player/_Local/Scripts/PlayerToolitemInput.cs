@@ -9,48 +9,74 @@ public class PlayerToolitemInput : IToolitemInput
     public event Action OnRechargeInput;
     public event Action<int> OnChangeToolitemInput;
 
-    private bool _currentShootingInput;
-    private bool _currentZoomInput;
+    private bool _currentUsingInput;
+    private bool _currentAternativeUsingInput;
+
+    private float _currentDelayUsing;
+    private float _timeLeftUsing;
+    private bool _isUse;
 
     public void Tick()
     {
-        ShootInput();
-        ShootingInput();
-        ZoomInput();
+        UseInput();
+        UsingInput();
+        AternativeUsingInput();
         RechargeInput();
         ChangeToolitemInput();
     }
 
-    private void ShootInput()
+    private void UseInput()
     {
-        if (Input.GetMouseButtonDown(0))
+        ProccesingUse();
+
+        if (Input.GetMouseButtonDown(0) && !_isUse)
+        {
             OnUseInput?.Invoke();
+            _isUse = true;
+        }
     }
 
-    public void ShootingInput()
+    private void ProccesingUse()
     {
-        var isShootingInput = false;
+        if (!_isUse)
+            return;
+
+        if (_timeLeftUsing <= 0)
+        {
+            _isUse = false;
+
+            _timeLeftUsing = _currentDelayUsing;
+        }
+        else
+        {
+            _timeLeftUsing -= Time.deltaTime;
+        }
+    }
+
+    public void UsingInput()
+    {
+        var isUsingInput = false;
 
         if (Input.GetMouseButton(0))
-            isShootingInput = true;
+            isUsingInput = true;
 
-        if (_currentShootingInput != isShootingInput)
-            OnChangeUseInput?.Invoke(isShootingInput);
+        if (_currentUsingInput != isUsingInput)
+            OnChangeUseInput?.Invoke(isUsingInput);
 
-        _currentShootingInput = isShootingInput;
+        _currentUsingInput = isUsingInput;
     }
 
-    public void ZoomInput()
+    public void AternativeUsingInput()
     {
-        var isZoomInput = false;
+        var isAternativeInputInput = false;
 
-        if (Input.GetMouseButtonDown(1))
-            isZoomInput = true;
+        if (Input.GetMouseButton(1))
+            isAternativeInputInput = true;
 
-        if (_currentZoomInput != isZoomInput)
-            OnChangeAlternativeUseInput?.Invoke(isZoomInput);
+        if (_currentAternativeUsingInput != isAternativeInputInput)
+            OnChangeAlternativeUseInput?.Invoke(isAternativeInputInput);
 
-        _currentZoomInput = isZoomInput;
+        _currentAternativeUsingInput = isAternativeInputInput;
     }
 
     private void RechargeInput()
@@ -67,5 +93,10 @@ public class PlayerToolitemInput : IToolitemInput
             OnChangeToolitemInput?.Invoke(1);
         else  if (Input.GetKeyDown(KeyCode.Alpha3))
             OnChangeToolitemInput?.Invoke(2);
+    }
+
+    public void SetDelayUse(float delay)
+    {
+        _currentDelayUsing = delay;
     }
 }

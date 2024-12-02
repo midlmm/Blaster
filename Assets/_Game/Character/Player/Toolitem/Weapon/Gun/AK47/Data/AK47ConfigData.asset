@@ -14,5 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _spread: 0.01
   _damage: 10
-  _maxAmmo: 20
-  _timeRecharge: 1
+  _maxAmmo: 30
+  _timeRecharge: 2
+  _timeEquip: 0.6
+  _positionZoom: {x: -0.165, y: 0.02, z: 0}
+  _rotationZoom: {x: 0, y: 5, z: 0}
+  _speedZoom: 5
+  _fovZoom: 40

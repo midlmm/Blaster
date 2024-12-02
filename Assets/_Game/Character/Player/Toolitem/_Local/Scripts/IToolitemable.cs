@@ -7,11 +7,13 @@ public interface IToolitemable
     public event Action<float> OnChangeTimeRecharge;
     public event Action<bool, float> OnChangeStateRecharge;
 
-    public abstract void Took(Transform transformCamera);
+    public abstract void Initialize(Transform transformCamera);
+
+    public abstract void Took();
     public abstract void Put();
 
-    public virtual void Use() { }
-    public virtual void Using() { }
+    public virtual bool Use() => false;
+    public virtual bool Using() => false;
     public virtual void AlternativeUsing(bool isActive) { }
-    public virtual void Recharge() { }
+    public virtual bool Recharge() => false;
 }

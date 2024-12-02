@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e77d2cad181d41d42950d911e4e073f4, type: 3}
   m_Name: DefaultCharacterConfig
   m_EditorClassIdentifier: 
-  _onGroundSpeed: 10
+  _onGroundSpeed: 5
   _onAccelerate: 1.3
   _onDecelerate: 0.5
   _inFlySpeed: 0.1

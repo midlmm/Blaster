@@ -1,0 +1,17 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5097996b835ed424fac34b885db16fad, type: 3}
+  m_Name: ArmsConfigData
+  m_EditorClassIdentifier: 
+  _prefab: {fileID: 9173765798566304654, guid: 61a0d3feca7b984469e8a062f74db220, type: 3}
+  _delayUsing: 0.5
+  _animatorOverride: {fileID: 22100000, guid: 4a210b20827e19841af1ed81978876dd, type: 2}

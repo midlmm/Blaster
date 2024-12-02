@@ -3,8 +3,8 @@ using UnityEngine;
 
 public class Timer
 {
-    public Action<float> OnUpdateTimer;
-    public Action OnEndTimer;
+    private Action<float> OnUpdateTimer;
+    private Action OnEndTimer;
 
     private float _timeLeft = 0f;
     private bool _timerOn = false;
@@ -16,6 +16,13 @@ public class Timer
         _time = time;
 
         OnUpdateTimer = updateTimer;
+        OnEndTimer = endTimer;
+    }
+
+    public Timer(float time, Action endTimer)
+    {
+        _time = time;
+
         OnEndTimer = endTimer;
     }
 

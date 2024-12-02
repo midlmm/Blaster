@@ -12,8 +12,10 @@ public class Player : MonoBehaviour, IDamageable
     [SerializeField] private Transform _characterTransform;
     [SerializeField] private Transform _cameraTransform;
 
+    [SerializeField] private Animator _animator;
     [SerializeField] private Toolitem _toolitem;
 
+    private PlayerAnimatorController _animatorController;
     private IToolitemInput _toolitemInput;
 
     [Inject]
@@ -21,8 +23,10 @@ public class Player : MonoBehaviour, IDamageable
     {
         Movements = new PlayerMovements(characterMovementsInput, cameraRotateInput, _characterTransform, _cameraTransform, _config);
 
+        _animatorController = new PlayerAnimatorController(_animator);
+
         _toolitemInput = toolitemInput;
-        _toolitem.Initialize(_toolitemInput, _cameraTransform);
+        _toolitem.Initialize(_toolitemInput, _cameraTransform, _animatorController);
 
         Healths = new Healths();
 

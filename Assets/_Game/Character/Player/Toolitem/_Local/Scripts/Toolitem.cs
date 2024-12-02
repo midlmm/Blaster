@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -19,11 +20,13 @@ public class Toolitem : MonoBehaviour
 
     private IToolitemInput _toolitemInput;
     private Transform _transformCamera;
+    private PlayerAnimatorController _playerAnimatorController;
 
-    public void Initialize(IToolitemInput toolitemInput, Transform transformCamera)
+    public void Initialize(IToolitemInput toolitemInput, Transform transformCamera, PlayerAnimatorController playerAnimatorController)
     {
         _toolitemInput = toolitemInput;
         _transformCamera = transformCamera;
+        _playerAnimatorController = playerAnimatorController;
 
         _toolitems = new Dictionary<string, IToolitemable>();
 
@@ -55,23 +58,31 @@ public class Toolitem : MonoBehaviour
         var toolitemConfig = _toolitemConfigDatas[key];
         _currentDelayUsing = toolitemConfig.DelayUsing;
 
+        _toolitemInput.SetDelayUse(_currentDelayUsing);
+
         _currentToolitem?.Put();
+        _playerAnimatorController.SetAnimatorOverride(toolitemConfig.AnimatorOverride);
 
         if (!_toolitems.ContainsKey(toolitemConfig.Prefab.name))
         {
-            _toolitems.Add(toolitemConfig.Prefab.name, Instantiate(toolitemConfig.Prefab, _armPoint).GetComponent<IToolitemable>());
+            var toolitem = Instantiate(toolitemConfig.Prefab, _armPoint).GetComponent<IToolitemable>();
+            toolitem.Initialize(_transformCamera);
+
+            _toolitems.Add(toolitemConfig.Prefab.name, toolitem);
         }
 
         _currentToolitem = _toolitems[toolitemConfig.Prefab.name];
 
         OnChangeToolitem?.Invoke(_currentToolitem);
 
-        _currentToolitem.Took(_transformCamera);
+        _currentToolitem.Took();
+        _playerAnimatorController.OnEquip();
     }
 
     private void Use()
     {
-        _currentToolitem.Use();
+        if (_currentToolitem.Use())
+            _playerAnimatorController.OnUse();
     }
 
     private void Using(bool isActive)
@@ -86,7 +97,8 @@ public class Toolitem : MonoBehaviour
 
     private void Recharge()
     {
-        _currentToolitem.Recharge();
+        if(_currentToolitem.Recharge())
+            _playerAnimatorController.OnRecharge();
     }
 
     private void ProcessingUsing()
@@ -96,7 +108,8 @@ public class Toolitem : MonoBehaviour
 
         if (_timeLeftUsing <= 0)
         {
-            _currentToolitem.Using();
+            if(_currentToolitem.Using())
+                _playerAnimatorController.OnUse();
 
             _timeLeftUsing = _currentDelayUsing;
         }

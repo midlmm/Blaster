@@ -15,6 +15,6 @@ public class ObjectCollider : MonoBehaviour, IDamageable
             if(item.TypeHit == _typeHit) 
                 effect = item.Effect;
 
-        Instantiate(effect, damageInfo.Point, Quaternion.LookRotation(damageInfo.Normal), transform);
+        Instantiate(effect, damageInfo.Point, Quaternion.LookRotation(damageInfo.Normal), null);
     }
 }
